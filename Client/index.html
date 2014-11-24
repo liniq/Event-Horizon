@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<title>Event horizon</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <link rel="icon" type="image/png" href="/Client/media/layout/favicon.png" />
+	<link href='http://fonts.googleapis.com/css?family=Roboto:300' rel='stylesheet' type='text/css'>
+	<link href="css/screen.css" rel="stylesheet" type="text/css" />
+
+	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.min.js" type="text/javascript"></script>
+    <script src="//code.jquery.com/ui/1.11.2/jquery-ui.js"></script>
+    <script src="/socket.io/socket.io.js" type="text/javascript"></script>
+    <!--<script type="text/javascript" charset="utf-8" src="js/jquery.tubular.1.0.js"></script>-->
+    <!--<script type="text/javascript" charset="utf-8" src="js/index.js"></script>-->
+
+</head>
+<body>
+
+<div id="wrapper" class="clearfix">
+
+	<div id="ui" class="black-85">
+		<img id="d_big" title="Increases defense by 80%" class="draggable shield" src="media/protection.png">
+		<img id="d_small" title="Increases defense by 50%" class="draggable shield" src="media/protection.png">
+		<img id="a_laser" title="Deals 50-150 points of damage" class="draggable shield" src="media/target-red.png">
+		<img id="a_missile" title="Deals 100-300 points of damage" class="draggable shield" src="media/target-red.png">
+		<p class="small">
+		<label>BATTLE: <span class="battle">1</span></label><br>
+		<label>FAME: <span class="battle">12</span></label>
+		</p>
+	</div>
+
+	<div id="main">
+		<div class="tap"></div>
+		<div id="c1" class="cell c1"></div>
+		<div id="c2" class="cell c2"></div>
+		<div id="c3" class="cell c3"></div>
+		<div id="c4" class="cell c4"></div>
+		<div id="c5" class="cell c5"></div>
+		<img id="field" src="media/ship.png">
+	</div>
+	
+	<div id="sidebar">
+		<form id="localStorage" class="black-85 p2m12"  method="post" action="">
+			<input type="text" name="name" id="shipname" value="" class="stored" value="shipname" />
+			<label title="Spaceship shield">SHIELD:</label>
+			<input type="text" id="shield" class="stored" value="" disabled="disabled" />
+			<label title="Turn">TURN:</label>
+			<input type="text" name="turn" id="turn" class="stored" value="" disabled="disabled" />
+			<label>ENEMIES:</label>
+			<input type="des" name="des" id="des" class="stored" value="" disabled="disabled" />
+			
+			<a href="#" id="endTurnButton" class="play">END TURN</a>
+		</form>
+		<br><br>
+        <span id="chat"></span>
+	</div>
+</div><!-- #wrapper -->
+
+<script type="text/javascript">
+var turnData ={
+};
+
+function writeChatLine(text, timeout){
+    $("chat").innerHTML += "<br/>" + text;
+    setTimeout(clearChat, timeout || 5000);
+}
+function clearChat(){
+    $("chat").innerHTML ="";
+}
+
+function CheckPosTurnData(){
+    $(".cell").each(function(){
+        var $cell = $(this);
+        var offset = $cell.offset();
+        var x = offset.left;
+        var y = offset.top;
+        var w = $cell.width();
+        var h = $cell.height();
+        $cell.removeClass("nonEmpty");
+        for(var n in turnData)
+            if (turnData[n]==$cell.attr('id'))
+                turnData[n]=null;
+        $(".shield").each(function(){
+            var $abil = $(this);
+            var pos = {
+              x: $abil.offset().left+$abil.width()/2,
+              y: $abil.offset().top+$abil.height()/2
+            };
+            if (x <= pos.x && y <= pos.y
+                    && x + w >= pos.x
+                    && y + h >= pos.y) {
+                // this element fits inside the selection rectangle
+                $cell.addClass("nonEmpty");
+                turnData[$abil.attr('id')]=$cell.attr('id');
+            }
+        });
+    });
+    var valid = 0;
+    for(var n in turnData){
+        if (turnData[n])
+            valid++;
+    }
+    if (valid==4) $("#endTurnButton").show();
+    else $("#endTurnButton").hide();
+}
+
+var timer=0;
+$(document).ready(function () {
+
+    $( ".draggable" ).draggable({
+        //snap:".cell",
+        //snapMode:"inner",
+        stop: function( event, ui ) {
+            CheckPosTurnData();
+        }
+    });
+
+    if (localStorage["shipname"]) {
+        $('#shipname').val(localStorage["shipname"]);
+    }
+    initNetwork();
+    $('#shipname').keyup(function () {
+        if(timer!=0)
+            clearTimeout(timer);
+        timer = setTimeout(GetPlayerByName,1000);
+    });
+});
+
+function GetPlayerByName(){
+    socket.emit('getPlayerByName',$('#shipname').val());
+}
+
+var socket = io();
+function initNetwork()
+{
+    socket.on('stats', function(data) {
+        $("#des").val(data.total +"/"+ data.ready);
+        if(data.name)
+            writeChatLine(data.name +" har entered this space");
+    });
+
+    socket.on('getPlayerByName', function(data) {
+        $("#shield").val(data.shields);
+    });
+}
+</script>
+</body>
+</html>

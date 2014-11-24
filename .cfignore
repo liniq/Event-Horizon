@@ -1,0 +1,8 @@
+node_modules
+Documentation
+.idea
+.gitignore
+.gitattributes
+.git
+LoginToBluemix.cmd
+PushToBluemix.cmd

@@ -1,0 +1,12 @@
+{
+    "name": "EventHorizonServer",
+    "version": "0.0.1",
+    "scripts": {
+        "start": "node ./Server/app.js"
+    },
+    "dependencies": {
+        "restify": "2.8.2",
+        "socket.io" : "*",
+        "cfenv": "*"
+    }
+}
