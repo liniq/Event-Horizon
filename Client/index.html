@@ -129,6 +129,7 @@ $(document).ready(function () {
 
     $('#endTurnButton').click(function () {
         socket.emit('turnData',{name:$('#shipname').val(),turnData:turnData});
+        $('#shipname').prop("disabled",true);
     });
 });
 

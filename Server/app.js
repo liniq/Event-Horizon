@@ -215,6 +215,7 @@ io.sockets.on('connection', function (socket) {
         if (socket.room && countInRoom(socket.room)==0) {
             if (players[socket.room].isActive){
                 players[socket.room].isActive =false;
+                players[socket.room].turnData=null;
                 socket.broadcast.emit('stats', {total:--activePlayers,ready: submittedTurnDataCount});
             }
         }
@@ -224,7 +225,13 @@ io.sockets.on('connection', function (socket) {
 });
 
 function countInRoom(roomId) {
-    return Object.keys(io.nsps['/'].adapter.rooms[roomId]).length;
+    var c=0;
+    for (var s in io.sockets.sockets){
+        var soc =io.sockets.sockets[s];
+        if (soc.connected && soc.room && soc.room==roomId)
+            c++;
+    }
+    return c;
 }
 
 server.listen(cfCore.port || 8080, function() {
