@@ -142,7 +142,6 @@ function UpdateStatsAndClear(activePl){
 
         if (me.shields <= 0 ) {
             me.lostShips++;
-            //me.turnsSurvived=0;
             me.isActive = false;
             activePlayers--;
         }
@@ -151,6 +150,12 @@ function UpdateStatsAndClear(activePl){
         delete me.turnData;
         io.to(name).emit('turnSummary',me);
         delete me.turnSummary;
+
+        //renew
+        if (me.shields <= 0 ) {
+            me.shields=1000;
+            me.turnsSurvived=0;
+        }
     }
     submittedTurnDataCount=0;
     setTimeout(function(){
@@ -208,8 +213,10 @@ io.sockets.on('connection', function (socket) {
     socket.on('disconnect', function () {
         socket.leaveAll();
         if (socket.room && countInRoom(socket.room)==0) {
-            players[socket.room].isActive =false;
-            socket.broadcast.emit('stats', {total:--activePlayers,ready: submittedTurnDataCount});
+            if (players[socket.room].isActive){
+                players[socket.room].isActive =false;
+                socket.broadcast.emit('stats', {total:--activePlayers,ready: submittedTurnDataCount});
+            }
         }
         //console.log("id "+ socket.id +' left');
     });

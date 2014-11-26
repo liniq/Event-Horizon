@@ -29,7 +29,7 @@ ol { margin-left: 36px; }
 }
 
 .dragging {
-  z-index: 1000;
+  z-index: 100;
   position: absolute;
   cursor: move;
 }
@@ -164,6 +164,27 @@ ol { margin-left: 36px; }
 	width: 80%;
 	max-width: 100%;
 	outline:none;
+}
+
+#gameover {
+    width: 100%;
+    height: 100%;
+    opacity: 0.6;
+    background: #000000;
+    color: red;
+    position: absolute;
+    top: 0;
+    z-index: 1000;
+    text-align: center;
+    display: none;
+}
+
+#gameover span {
+    position: relative;
+    top:45%;
+    left: -3%;
+    font: 20px bold;
+    opacity: 1;
 }
 #name:focus {border-bottom: 1px solid #fff; outline:none; color:#ccc;}
 #sidebar ol { margin: 12px 0 12px 22px; }

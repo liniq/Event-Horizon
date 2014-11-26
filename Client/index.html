@@ -23,10 +23,10 @@
 		<img id="d_small" title="Increases defense by 50%" class="draggable shield" src="media/protection.png">
 		<img id="a_laser" title="Deals 50-150 points of damage" class="draggable shield" src="media/target-red.png">
 		<img id="a_missile" title="Deals 100-300 points of damage" class="draggable shield" src="media/target-red.png">
-		<p class="small">
-		<label>BATTLE: <span class="battle">1</span></label><br>
-		<label>FAME: <span class="battle">12</span></label>
-		</p>
+		<!--<p class="small">-->
+		<!--<label>BATTLE: <span class="battle">1</span></label><br>-->
+		<!--<label>FAME: <span class="battle">12</span></label>-->
+		<!--</p>-->
 	</div>
 
 	<div id="main">
@@ -54,7 +54,9 @@
 		<br><br>
         <span id="chat"></span>
 	</div>
+
 </div><!-- #wrapper -->
+<div id="gameover"><span>Your ship was destroyed. <br/> Reload the page to get new ship and enter battle again.</span></div>
 
 <script type="text/javascript">
 var turnData ={
@@ -158,6 +160,8 @@ function initNetwork()
     socket.on('turnSummary', function(data) {
         animateValueChange($("#shield"),data.shields);
         animateValueChange($("#turnsSurvived"),data.turnsSurvived);
+        if (data.shields < 0)
+            $("#gameover").show();
     });
 }
 </script>
