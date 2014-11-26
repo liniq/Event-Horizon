@@ -75,8 +75,10 @@ function GameLoop(){
             }
         }
         DoTurnCounts(playersInThisRound);
+
         ticksTillStart = 90;
     }
+    setTimeout(GameLoop, 1000);
 }
 
 function DoTurnCounts(activePl){
@@ -92,24 +94,19 @@ function DoTurnCounts(activePl){
         var ldmg = Math.random() < chanceToMiss ? 0 :laserDmg[0] + Math.round(Math.random()*(laserDmg[1]-laserDmg[0]));
         var mdmg = Math.random() < chanceToMiss ? 0 :missileDmg[0] + Math.round(Math.random()*(missileDmg[1]-missileDmg[0]));
         var rcvd=0;
-        if (target.turnData.d_small == lcell)
-            rcvd+= Math.round(ldmg*smallDef);
-        if (target.turnData.d_big == lcell)
-            rcvd+= Math.round(ldmg*bigDef);
 
-        if (target.turnData.d_small == mcell)
-            rcvd+= Math.round(mdmg*smallDef);
-        if (target.turnData.d_big == mcell)
-            rcvd+= Math.round(mdmg*bigDef);
+        rcvd+= Math.round(ldmg*(target.turnData.d_small == lcell ? smallDef : (target.turnData.d_big == lcell ? bigDef : 1)));
+        rcvd+= Math.round(mdmg*(target.turnData.d_small == mcell ? smallDef : (target.turnData.d_big == mcell ? bigDef : 1)));
 
         target.turnSummary.blocked += (mdmg+ldmg - rcvd);
         target.turnSummary.dodged+=ldmg < 0.1 ? 1:0 + mdmg < 0.1 ? 1:0;
         //last chance
-        if (target.shields + target.turnSummary.recharged + restoreAmount > rcvd)
+        if ((target.shields + target.turnSummary.recharged < target.turnSummary.received+rcvd) &&
+            (target.shields + target.turnSummary.recharged > target.turnSummary.received))
             target.turnSummary.recharged +=Math.random() < restoreChance ? restoreAmount:0;
-        else if (target.shields > 0 && target.shields + target.turnSummary.recharged < rcvd)
+        if (target.shields + target.turnSummary.recharged < target.turnSummary.received + rcvd)
             me.turnSummary.destroyedTarget = true;
-        target.received+=rcvd;
+        target.turnSummary.received+=rcvd;
 
         //restore shield
         me.recharged += Math.random() < restoreChance ? restoreAmount:0;
@@ -145,7 +142,9 @@ function UpdateStatsAndClear(activePl){
 
         if (me.shields <= 0 ) {
             me.lostShips++;
+            //me.turnsSurvived=0;
             me.isActive = false;
+            activePlayers--;
         }
         else me.turnsSurvived++;
 
@@ -153,10 +152,15 @@ function UpdateStatsAndClear(activePl){
         io.to(name).emit('turnSummary',me);
         delete me.turnSummary;
     }
+    submittedTurnDataCount=0;
+    setTimeout(function(){
+        io.sockets.emit('stats', {total:activePlayers,ready: submittedTurnDataCount});
+    },50);
+
 }
 
 function GetTarget(me,all){
-    var count = all.length;
+    var count = Object.keys(all).length;
     var targetName = null;
     do{
         var ti = Math.floor((Math.random() * count));
@@ -167,8 +171,7 @@ function GetTarget(me,all){
     me.lastTargetName = targetName;
     return all[targetName]
 }
-
-setInterval(GameLoop, 1000);
+GameLoop();
 
 
 //****************GAME LOGIC END*****************//
@@ -179,22 +182,23 @@ io.sockets.on('connection', function (socket) {
     //console.log("id "+ socket.id +' joined');
 
     socket.on('turnData', function(data){
-
         if (!socket.room) { // new player join
             if (!players[data.name])
                 players[data.name] = new player();
 
             if (players[data.name].isActive == false)
-                io.sockets.emit('stats', {name: data.name, total: ++activePlayers,ready: submittedTurnDataCount});
+                activePlayers++;
             socket.join(data.name);
             socket.room=data.name;
         }
 
         players[data.name].isActive = true;
-        players[socket.room].turnData = data.turnData;
         socket.broadcast.to(socket.room).emit('turnData', data.turnData);
-        if (!players[data.name].turnData)
+        if (!players[data.name].turnData){
+            players[socket.room].turnData = data.turnData;
             io.sockets.emit('stats', {total:activePlayers,ready: ++submittedTurnDataCount});
+        }
+
     });
 
     socket.on('getPlayerByName', function (data){
@@ -213,7 +217,7 @@ io.sockets.on('connection', function (socket) {
 });
 
 function countInRoom(roomId) {
-    return Object.keys(io.adapter.rooms[roomId]).length;
+    return Object.keys(io.nsps['/'].adapter.rooms[roomId]).length;
 }
 
 server.listen(cfCore.port || 8080, function() {

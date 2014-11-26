@@ -152,7 +152,7 @@ ol { margin-left: 36px; }
 #ui { min-width: 50px; max-width: 80px; width:100%; position: absolute; top: 50px; left: 50px; z-index: 11000; border-radius: 4px; padding-bottom: 15px; }
 #ui img {width: 60%; margin-left: 15px;}
 
-#name {
+#shipname {
 	position: absolute;
 	top: -40px;
 	border: none;
@@ -161,7 +161,6 @@ ol { margin-left: 36px; }
 	color: #fff;
 		font-size: 5vh;
 		line-height: 5vh;
-	text-transform: uppercase;
 	width: 80%;
 	max-width: 100%;
 	outline:none;

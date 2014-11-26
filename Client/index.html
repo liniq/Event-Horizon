@@ -44,8 +44,8 @@
 			<input type="text" name="name" id="shipname" value="" class="stored" value="shipname" />
 			<label title="Spaceship shield">SHIELD:</label>
 			<input type="text" id="shield" class="stored" value="" disabled="disabled" />
-			<label title="Turn">TURN:</label>
-			<input type="text" name="turn" id="turn" class="stored" value="" disabled="disabled" />
+			<label title="Turn">Survived turns:</label>
+			<input type="text" name="turn" id="turnsSurvived" class="stored" value="" disabled="disabled" />
 			<label>ENEMIES:</label>
 			<input type="des" name="des" id="des" class="stored" value="" disabled="disabled" />
 			
@@ -115,32 +115,49 @@ $(document).ready(function () {
         }
     });
 
-    if (localStorage["shipname"]) {
-        $('#shipname').val(localStorage["shipname"]);
-    }
+    $('#shipname').val('WrGay'+(new Date().getMilliseconds()));
+    GetPlayerByName();
+
     initNetwork();
     $('#shipname').keyup(function () {
         if(timer!=0)
             clearTimeout(timer);
-        timer = setTimeout(GetPlayerByName,1000);
+        timer = setTimeout(GetPlayerByName,500);
+    });
+
+    $('#endTurnButton').click(function () {
+        socket.emit('turnData',{name:$('#shipname').val(),turnData:turnData});
     });
 });
 
 function GetPlayerByName(){
-    socket.emit('getPlayerByName',$('#shipname').val());
+    socket.emit('getPlayerByName',{name:$('#shipname').val()});
+}
+
+function animateValueChange(container,value){
+    container.fadeOut(function(){
+        container.val(value);
+        container.fadeIn();
+    });
 }
 
 var socket = io();
 function initNetwork()
 {
     socket.on('stats', function(data) {
-        $("#des").val(data.total +"/"+ data.ready);
+        animateValueChange($("#des"),data.total +"/"+ data.ready);
         if(data.name)
-            writeChatLine(data.name +" har entered this space");
+            writeChatLine(data.name +" has entered this space");
     });
 
     socket.on('getPlayerByName', function(data) {
-        $("#shield").val(data.shields);
+        animateValueChange($("#shield"),data.shields);
+        animateValueChange($("#turnsSurvived"),data.turnsSurvived);
+    });
+
+    socket.on('turnSummary', function(data) {
+        animateValueChange($("#shield"),data.shields);
+        animateValueChange($("#turnsSurvived"),data.turnsSurvived);
     });
 }
 </script>
