@@ -14,45 +14,55 @@
     <!--<script type="text/javascript" charset="utf-8" src="js/index.js"></script>-->
 
 </head>
-<body>
+<body class="back img1">
 
 <div id="wrapper" class="clearfix">
-
-	<div id="ui" class="black-85">
-		<img id="d_big" title="Increases defense by 80%" class="draggable shield" src="media/protection.png">
-		<img id="d_small" title="Increases defense by 50%" class="draggable shield" src="media/protection.png">
-		<img id="a_laser" title="Deals 50-150 points of damage" class="draggable shield" src="media/target-red.png">
-		<img id="a_missile" title="Deals 100-300 points of damage" class="draggable shield" src="media/target-red.png">
-		<!--<p class="small">-->
-		<!--<label>BATTLE: <span class="battle">1</span></label><br>-->
-		<!--<label>FAME: <span class="battle">12</span></label>-->
-		<!--</p>-->
+	<div class="tap"></div>
+	<span id="chat"></span>
+	<div id="ui">
+		<form id="localStorage"  method="post" action="">
+			<input id="shipname" type="text" name="name" value="" class="stored" value="shipname" />
+			<label class="sh">SHIELD:</label>
+			<input type="text" id="shield" class="stored sh" value="" disabled="disabled" />
+			
+			<label title="Turn">SURVIVED TURNS:</label>
+			<input type="text" name="turn" id="turnsSurvived" class="stored" value="" disabled="disabled" />
+			
+			<label class="fm">FAME:</label>
+			<input type="text" id="fame" class="stored fm" value="" disabled="disabled" />
+			
+			<img id="d_big" title="Increases defense by 80%" class="draggable shield" src="media/protection.png">
+			<img id="d_small" title="Increases defense by 50%" class="draggable shield" src="media/protection.png">
+			<img id="a_laser" title="Deals 50-150 points of damage" class="draggable shield" src="media/target-red.png">
+			<img id="a_missile" title="Deals 100-300 points of damage" class="draggable shield" src="media/target-red.png">
+		</form>	
 	</div>
 
 	<div id="main">
-		<div class="tap"></div>
-		<div id="c1" class="cell c1"></div>
-		<div id="c2" class="cell c2"></div>
-		<div id="c3" class="cell c3"></div>
-		<div id="c4" class="cell c4"></div>
-		<div id="c5" class="cell c5"></div>
-		<img id="field" src="media/ship.png">
+		<div id="mothership">
+			<div id="c1" class="cell c1"></div>
+			<div id="c2" class="cell c2 active"></div>
+			<div id="c3" class="cell c3"></div>
+			<div id="c4" class="cell c4"></div>
+			<img id="field" src="media/mothership.png">
+		</div>
+		
+		<div id="enemy">
+			<div id="c1" class="cell c1"></div>
+			<div id="c2" class="cell c2"></div>
+			<div id="c3" class="cell c3"></div>
+			<div id="c4" class="cell c4 active"></div>
+			
+			<form id="localStorage"  method="post" action="">
+				<label>ENEMIES:</label>
+				<input type="des" name="des" id="des" class="stored" value="" disabled="disabled" />
+			</form>
+			<img id="field" src="media/ship.png">
+		</div>
 	</div>
 	
-	<div id="sidebar">
-		<form id="localStorage" class="black-85 p2m12"  method="post" action="">
-			<input type="text" name="name" id="shipname" value="" class="stored" value="shipname" />
-			<label title="Spaceship shield">SHIELD:</label>
-			<input type="text" id="shield" class="stored" value="" disabled="disabled" />
-			<label title="Turn">Survived turns:</label>
-			<input type="text" name="turn" id="turnsSurvived" class="stored" value="" disabled="disabled" />
-			<label>ENEMIES:</label>
-			<input type="des" name="des" id="des" class="stored" value="" disabled="disabled" />
-			
-			<a href="#" id="endTurnButton" class="play">END TURN</a>
-		</form>
-		<br><br>
-        <span id="chat"></span>
+	<div id="footer">
+        <a href="#" id="endTurnButton" class="play">END TURN</a>
 	</div>
 
 </div><!-- #wrapper -->
