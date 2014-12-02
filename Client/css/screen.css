@@ -63,15 +63,15 @@ ol { margin-left: 36px; }
 }
 
 #ui {
-z-index: 11000; padding: 5px 20px 12px 20px; margin: 20px; border:1px solid #29ABE2; background: url(../media/black-85-trans.png); clear: both;
--webkit-backface-visibility: visible;
--webkit-transform-origin: 50% 50%;
--webkit-transform: perspective(700px) rotateX(-10deg);
--webkit-transition: all 0.5s ease;
--moz-transition: all 0.5s ease;
--o-transition: all 0.5s ease;
--ms-transition: all 0.5s ease;
-transition: all 0.5s ease;
+	z-index: 11000; padding: 5px 20px 12px 20px; margin: 20px; border:1px solid #29ABE2; background: url(../media/black-85-trans.png); clear: both;
+	-webkit-backface-visibility: visible;
+	-webkit-transform-origin: 50% 50%;
+	-webkit-transform: perspective(700px) rotateX(-10deg);
+	-webkit-transition: all 0.5s ease;
+	-moz-transition: all 0.5s ease;
+	-o-transition: all 0.5s ease;
+	-ms-transition: all 0.5s ease;
+	transition: all 0.5s ease;
 }
 
 #ui label, #ui input {
@@ -469,7 +469,7 @@ transition: all 0.5s ease;
   height: 100%;
   position: relative;
   top:-150px;
-  z-index:0;
+  z-index:1;
 }
 .solar-syst:after {
   content: "";
@@ -739,3 +739,50 @@ transition: all 0.5s ease;
             transform: rotate(-360deg);
   }
 }
+
+@keyframes move-twink-back {
+    from {background-position:0 0;}
+    to {background-position:-10000px 5000px;}
+}
+@-webkit-keyframes move-twink-back {
+    from {background-position:0 0;}
+    to {background-position:-10000px 5000px;}
+}
+@-moz-keyframes move-twink-back {
+    from {background-position:0 0;}
+    to {background-position:-10000px 5000px;}
+}
+@-ms-keyframes move-twink-back {
+    from {background-position:0 0;}
+    to {background-position:-10000px 5000px;}
+}
+
+
+.stars, .twinkling {
+  position:absolute;
+  top:0;
+  left:0;
+  right:0;
+  bottom:0;
+  width:100%;
+  height:100%;
+  display:block;
+
+}
+
+.stars {
+  background:#000 url(../media/stars.png) repeat top center;
+  z-index:-1;
+}
+
+.twinkling{
+  background:transparent url(../media/twinkling.png) repeat top center;
+  z-index:0;
+
+  -moz-animation:move-twink-back 200s linear infinite;
+  -ms-animation:move-twink-back 200s linear infinite;
+  -o-animation:move-twink-back 200s linear infinite;
+  -webkit-animation:move-twink-back 200s linear infinite;
+  animation:move-twink-back 200s linear infinite;
+}
+
